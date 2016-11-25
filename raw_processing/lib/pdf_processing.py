@@ -13,35 +13,36 @@ from tabula import read_pdf_table
 # All of the steps required to extract the data table from the PDF
 # Takes the location of a pdf as in input & returns a dataframe with the extracted information
 def pdf_process(pdf):
+    
     try:
-    # Determine City & Auction Date
-    city, date = city_date(pdf)
+        # Determine City & Auction Date
+        city, date = city_date(pdf)
 
-    # Process pages 2-N
-    p2n = process_p2n(pdf, p2n_coords)
-            
-    # Extract Columns to assign to Page 1
-    if p2n is None:
-        p2_columns = None
-    else:
-        p2_columns = p2n.columns
-    
-    # Process page 1
-    p1 = process_p1(pdf, p1_coords, p2_columns)
-    
-    # Combine P1 & P2N and add city & date info
-    out = p1.append(p2n).reset_index()
-    out['city'] = city
-    out['date'] = date
+        # Process pages 2-N
+        p2n = process_p2n(pdf, p2n_coords)
+                
+        # Extract Columns to assign to Page 1
+        if p2n is None:
+            p2_columns = None
+        else:
+            p2_columns = p2n.columns
+        
+        # Process page 1
+        p1 = process_p1(pdf, p1_coords, p2_columns)
+        
+        # Combine P1 & P2N and add city & date info
+        out = p1.append(p2n).reset_index()
+        out['city'] = city
+        out['date'] = date
 
-    print "Processed {}".format(pdf)
+        print "Processed {}".format(pdf)
+        
+        return out
     
-    return out
-    
-except:
-    print "Failed {}".format(pdf)
-    failed.append(pdf)
-    pass
+    except:
+        print "Failed {}".format(pdf)
+        failed.append(pdf)
+        pass
 
 
 
@@ -50,7 +51,6 @@ def city_date(filename):
     """
     Takes PDF name of known structure & returns the city & auction date
     """
-
     name_parts=filename.split('/')[-1].split('_')
     return name_parts[1], name_parts[0]
 
