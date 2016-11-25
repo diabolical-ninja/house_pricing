@@ -1,5 +1,5 @@
 """
-Title: pdf_processing
+Title: main
 Desc:  All functions required to extract auction result table from Domain PDF
 Author: Yassin Eltahir
 Date: 2016-11-25
@@ -10,17 +10,18 @@ Date: 2016-11-25
 test_file = '/Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis/20160213_melbourne_auction_results.pdf'
 
 
-import pdf_processing
-import extract_processing
+from lib.pdf_processing import pdf_process
+from lib.extract_processing import extract_clean
 
+failed=[]
 
 def main():
-    
+
     # 1. Extract Table from PDF
-    out = pdf_processing.pdf_process(test_file)
+    out = pdf_process(test_file)
 
     # 2. Clean up Columns
-    clean = extract_processing.extract_clean(out)
+    clean = extract_clean(out)
 
 
 if __name__ == "__main__":
