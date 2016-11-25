@@ -1,0 +1,5 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    // Turn off linting!
+    "python.linting.enabled": false
+}
