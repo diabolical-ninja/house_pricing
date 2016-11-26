@@ -9,21 +9,36 @@ Date: 2016-11-25
 """
 
 import pandas as pd
+from lib.logConf import *
+
+initialize_logger(console=False)
 
 
 # Will perform all the cleaning tasks
 def extract_clean(df):
+    
+    logging.info(' Start extract_clean')
 
-    # Price: Remove special characters & convert to float
-    df['Price'] = df.Price.str.strip('$').str.replace(',','').astype(float)
- 
-    # Type: Extract number of bedrooms & property type
-    tmp = df['Type'].str.split(' ',expand=True).ix[:,[0,2]]
-    tmp.columns = ['num_beds','prop_type']
-    df = pd.concat([df,tmp], axis=1)
+    try:
 
-    # Clean up agent names which contained linebreaks
-    df = agent_breaks(df)
+        # Price: Remove special characters & convert to float
+        df['Price'] = df.Price.str.strip('$').str.replace(',','').astype(float)
+    
+        # Type: Extract number of bedrooms & property type
+        tmp = df['Type'].str.split(' ',expand=True).ix[:,[0,2]]
+        tmp.columns = ['num_beds','prop_type']
+        df = pd.concat([df,tmp], axis=1)
+
+        # Clean up agent names which contained linebreaks
+        df = agent_breaks(df)
+
+        logging.info(' Finish extract_clean')
+
+        return df
+
+    except Exception as e:
+        logging.exception(' Failed extract_clean')
+        quit()
 
 
 
