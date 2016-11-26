@@ -5,23 +5,39 @@ Author: Yassin Eltahir
 Date: 2016-11-25
 """
 
-
-# Dummy file for testing
-test_file = '/Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis/20160213_melbourne_auction_results.pdf'
-
-
 from lib.pdf_processing import pdf_process
 from lib.extract_processing import extract_clean
+from lib.logConf import *
 
-failed=[]
+# Logging Setting:
+#   - Print to Project Root
+#   - File titled error_raw_processing.log
+#   - Output logs to console as well
+initialize_logger(console=False)
+
+
+# Dummy file for testing
+# test_file = '/Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis/20160213_melbourne_auction_results.pdf'
+test_file = '/Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis/roar.pdf'
+
 
 def main():
+    
+    logging.info(' Begin Processing {}'.format(test_file))
 
-    # 1. Extract Table from PDF
-    out = pdf_process(test_file)
 
-    # 2. Clean up Columns
-    clean = extract_clean(out)
+    try:
+        # 1. Extract Table from PDF
+        out = pdf_process(test_file)
+
+        # 2. Clean up Columns
+        clean = extract_clean(out)
+
+        logging.info(' Finished processing {}'.format(test_file))
+
+    except Exception as e:
+        logging.exception(' Failed processing {}'.format(test_file))
+        
 
 
 if __name__ == "__main__":
