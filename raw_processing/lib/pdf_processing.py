@@ -8,6 +8,9 @@ Date: 2016-11-25
 import pandas as pd
 from PyPDF2 import PdfFileReader
 from tabula import read_pdf_table
+from lib.logConf import *
+
+initialize_logger(console=False)
 
 # Coordinates for first page table
 y1 = 224.4
@@ -30,27 +33,38 @@ p2n_coords = [y21, x21, y22, x22]
 # Takes the location of a pdf as in input & returns a dataframe with the extracted information
 def pdf_process(pdf):
     
-    # Determine City & Auction Date
-    city, date = city_date(pdf)
+    logging.info(' Start pdf_process on {}'.format(pdf))
+    
+    try:
+        # Determine City & Auction Date
+        city, date = city_date(pdf)
 
-    # Process pages 2-N
-    p2n = process_p2n(pdf, p2n_coords)
-            
-    # Extract Columns to assign to Page 1
-    if p2n is None:
-        p2_columns = None
-    else:
-        p2_columns = p2n.columns
-    
-    # Process page 1
-    p1 = process_p1(pdf, p1_coords, p2_columns)
-    
-    # Combine P1 & P2N and add city & date info
-    out = p1.append(p2n).reset_index()
-    out['city'] = city
-    out['date'] = date
-    
-    return out
+        # Process pages 2-N
+        p2n = process_p2n(pdf, p2n_coords)
+                
+        # Extract Columns to assign to Page 1
+        if p2n is None:
+            p2_columns = None
+        else:
+            p2_columns = p2n.columns
+        
+        # Process page 1
+        p1 = process_p1(pdf, p1_coords, p2_columns)
+        
+        # Combine P1 & P2N and add city & date info
+        out = p1.append(p2n).reset_index()
+        out['city'] = city
+        out['date'] = date
+        
+        logging.info(' Finish pdf_process on {}'.format(pdf))
+
+        return out
+
+    except Exception as e:
+        logging.exception(' Failed pdf_process on {}'.format(pdf))
+        quit()
+
+
 
 # Determine city & auction date
 def city_date(filename):
