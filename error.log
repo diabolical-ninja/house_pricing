@@ -1,0 +1,9 @@
+2016-11-26 17:05:40,221 - INFO:  Begin Processing /Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis/roar.pdf
+2016-11-26 17:05:40,221 - INFO:  Start pdf_process on /Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis/roar.pdf
+2016-11-26 17:05:40,221 - ERROR:  Failed pdf_process on /Users/yassineltahir/Google Drive/Data Science/Real Estate Analysis/roar.pdf
+Traceback (most recent call last):
+  File "/Users/yassineltahir/Repos/house_pricing/raw_processing/lib/pdf_processing.py", line 40, in pdf_process
+    city, date = city_date(pdf)
+  File "/Users/yassineltahir/Repos/house_pricing/raw_processing/lib/pdf_processing.py", line 75, in city_date
+    return name_parts[1], name_parts[0]
+IndexError: list index out of range
