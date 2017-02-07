@@ -22,7 +22,7 @@ def extract_clean(df):
     try:
 
         # Price: Remove special characters & convert to float
-        df['Price'] = df.Price.str.strip('$').str.replace(',','').astype(float)
+        df['Price'] = pd.to_numeric(df.Price.str.strip('$').str.replace(',',''), errors='coerce')
     
         # Type: Extract number of bedrooms & property type
         tmp = df['Type'].str.split(' ',expand=True).ix[:,[0,2]]
