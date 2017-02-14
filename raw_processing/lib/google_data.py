@@ -31,16 +31,17 @@ def google_data(df):
 
 
     
-def nearest_feature(address, feature, num_sm, con):
+def nearest_feature(address, feature, num_sm, sm_pref, con):
     """
-    Returns travel time (Car, PT, Walking) for the N nearest features 
+    Calcualtes travel time & distance (Car, PT, Walking) for the N nearest features 
     Input:
         df = Dataframe containing an address column used for searching
         feature = What to search for; supermarket, high-school etc
-        num_sm = Closest (travel time) N to return
+        num_sm = Closest N to return
+        sm_pref = Closeness measure: distance or travel duration
         con = Initialised Google maps connection object
     Output:
-        df = original df with columns for travel times
+        df = Dataframe containing location name, coordinates, distance, duration & transit mode
     """
 
     # Get Address Coordinates
@@ -54,7 +55,7 @@ def nearest_feature(address, feature, num_sm, con):
     
     # Extract Feature Name & Coordinates
     nearby = [[x['name'],x['geometry']['location']] for x in places_out['results']]
-    
+    nearby_coords = [x[1] for x in nearby]
     
     # For each place, calculate the travel time
     transport_methods = ['driving','transit','walking']
@@ -62,37 +63,28 @@ def nearest_feature(address, feature, num_sm, con):
     travel_times = []
     for mode in transport_methods:
         
-        for dest in nearby:
-            
-            # Get Directions
-            directions = gmaps.directions(origin = address_coords
-                            , destination = dest[1]
-                            , mode = mode
-                            , units = 'metric'
-                            #, arrival_time = 9 # This currently isn't working
-                            )
-            
-            # Extract Travel Time & Distance
-            out = [dest[0]                                          # Feature Name
-                   , mode                                           # Transport Method
-                   , directions[0]['legs'][0]['distance']['text']   # Distance (Km)
-                   , directions[0]['legs'][0]['duration']['text']   # Travel Time
-                   ]
-            
-            
-            '''
-            TO-DO:
-            -For each transport mode, capture the N fastest (time) locations
-            -Return some data structure containing just those locations for that mode
-            
-            Collect all modes & close out fn
-            '''
-            
-            travel_times.append(out)
+        # Get distance to all locations      
+        dmat = gmaps.distance_matrix(origins = address_coords
+                        , destinations = nearby_coords
+                        , mode = mode
+                        , units = 'metric')
+        
+        # Extract distance & travel time
+        tmp = [[x['distance']['value'],x['duration']['value']] for x in dmat['rows'][0]['elements']]
 
-
-            
-    return travel_times
-
+        # Join Back with Nearby Destinations & add in tranit mode
+        tmp = zip(nearby, tmp)
+        out = [x[0]+x[1]+[mode] for x in tmp]
+        
+        # Capture
+        travel_times.extend(out)
+        
+        
+    # Identify the N closest (travel time) locations
+    travel_times = pd.DataFrame(travel_times)
+    travel_times.columns = ('loc_name','coords','distance','duration','mode')
+    tmp_small = travel_times.groupby('mode')[sm_pref].nsmallest(num_sm)
+    
+    return travel_times.ix[tmp_small.index.levels[1]]
 
 
