@@ -7,6 +7,7 @@ Date: 2016-11-25
 
 from lib.pdf_processing import pdf_process
 from lib.extract_processing import extract_clean
+from lib.rba_cash_rate import getCashHistory
 from lib.logConf import *
 
 # Logging Setting:
@@ -26,13 +27,19 @@ def main():
     
     logging.info(' Begin Processing {}'.format(test_file))
 
-
     try:
         # 1. Extract Table from PDF
         out = pdf_process(test_file)
 
         # 2. Clean up Columns
         clean = extract_clean(out)
+
+        # 3. Get Current Cash Rate
+        cash_rates = getCashHistory()
+        clean['cash_rate'] = cash_rates[cash_rates['date']==max(cash_rates['date'])]['cash_rate']
+
+        # 3. Attach Location Attributes Data
+        # loc_attris = 
 
         # 3. Export Data
         clean.to_csv(path_or_buf='C:/Users/Yass/Downloads/test.csv',sep='|')
