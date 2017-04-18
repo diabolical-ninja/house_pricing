@@ -9,6 +9,7 @@ import pandas as pd
 from PyPDF2 import PdfFileReader
 from tabula import read_pdf_table
 from lib.logConf import *
+import sys
 
 initialize_logger(console=False)
 
@@ -55,6 +56,10 @@ def pdf_process(pdf):
         out = p1.append(p2n).reset_index()
         out['city'] = city
         out['date'] = date
+
+        # Update column names
+        out = out.drop('index',1)
+        out.columns=['suburb','address','building_type','price','result','agent','city','date']
         
         logging.info(' Finish pdf_process on {}'.format(pdf))
 
@@ -141,7 +146,7 @@ def process_p1(pdf, coordinates, columns=None):
 
     # If Column headers aren't provided assume their values
     if columns is None:
-        p1.columns=['Suburb','Address','Type','Price','Result','Agent']
+        p1.columns=['suburb','address','building_type','price','result','agent']
     else:
         p1.columns=columns
 
