@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import urllib2
 import pandas as pd
 from tqdm import tqdm
+import datetime
 
 
 
@@ -76,4 +77,20 @@ def getCashHistory():
             
             
             
-out = getCashHistory()  
+
+
+def cashRateAtDate(history, date):
+    '''
+    Takes a dataframe of historical cash rates & identifies the one
+    in existence at a given date
+    '''
+    
+    # convert date format
+    date = datetime.datetime.strptime(date, '%Y%m%d')
+    
+    # Want to find the most recent record (max) that hasn't surpassed the 
+    # auction date. This is the max((historical dates - date) < 0).
+    diff = history['date'] - date
+    return history.ix[diff[diff < datetime.timedelta(minutes=0)].idxmax()]
+    
+    
