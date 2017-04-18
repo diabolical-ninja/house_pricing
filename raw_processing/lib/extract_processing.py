@@ -10,6 +10,7 @@ Date: 2016-11-25
 
 import pandas as pd
 from lib.logConf import *
+import sys
 
 initialize_logger(console=False)
 
@@ -22,11 +23,10 @@ def extract_clean(df):
     try:
 
         # Price: Remove special characters & convert to float
-        df['Price'] = pd.to_numeric(df.Price.str.strip('$').str.replace(',',''), errors='coerce')
+        df['price'] = pd.to_numeric(df.price.str.strip('$').str.replace(',',''), errors='coerce')
     
         # Type: Extract number of bedrooms & property type
-        tmp = df['Type'].str.split(' ',expand=True).ix[:,[0,2]]
-        tmp.columns = ['num_beds','prop_type']
+        tmp = getBuildType(df)
         df = pd.concat([df,tmp], axis=1)
 
         # Clean up agent names which contained linebreaks
@@ -39,6 +39,7 @@ def extract_clean(df):
     except Exception as e:
         logging.exception(' Failed extract_clean')
         quit()
+        
 
 
 
@@ -51,13 +52,36 @@ def agent_breaks(df):
 
     # Identify Instances of line breaks occuring in the agent name
     # Occurs when agent IS NOT NULL & Suburb/Price ARE NULL
-    brk_rows = df[df.Suburb.isnull() & df.Price.isnull() & df.Agent.notnull()]
+    brk_rows = df[df.suburb.isnull() & df.price.isnull() & df.agent.notnull()]
 
     # For each instance concatenate agent to previous agent
     # Work in reverse order to handle cases with multiple breaks
     for i in reversed(brk_rows.index):
-        new_agent = "{} {}".format(df.Agent[(i-1)], df.Agent[i])
-        df.set_value((i-1),'Agent',new_agent)
+        new_agent = "{} {}".format(df.agent[(i-1)], df.agent[i])
+        df.set_value((i-1),'agent',new_agent)
 
     # Remove rows identified & exit
     return df.drop(brk_rows.index)
+
+
+
+
+
+def getBuildType(df):
+    '''
+    Processes the buidling type string into:
+        Bedroom count (NA, 0.....N)
+        Building Type (studio, house, etc)
+    '''
+    tmp = df['building_type'].str.split(' ',expand=True).ix[:,[0,2]]
+    tmp.columns = ['num_beds','prop_type']
+    
+    # Some buildings are listed as:
+    #   - 'studio' or 'h' only. Fix those up.
+    tmp.loc[tmp['num_beds']=='h',['num_beds','prop_type']] = [None,'h']
+    tmp.loc[tmp['num_beds']=='u',['num_beds','prop_type']] = [None,'u']
+    tmp.loc[tmp['num_beds']=='t',['num_beds','prop_type']] = [None,'t']
+    tmp.loc[tmp['num_beds']=='studio',['num_beds','prop_type']] = [0,'studio']
+    
+    return tmp
+    
