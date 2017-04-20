@@ -9,7 +9,7 @@ import pandas as pd
 from PyPDF2 import PdfFileReader
 from tabula import read_pdf_table
 from lib.logConf import *
-import sys
+
 
 initialize_logger(console=False)
 
@@ -67,7 +67,7 @@ def pdf_process(pdf):
 
     except Exception as e:
         logging.exception(' Failed pdf_process on {}'.format(pdf))
-        quit()
+        pass
 
 
 
