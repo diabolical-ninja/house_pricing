@@ -10,7 +10,7 @@ Date: 2016-11-25
 
 import pandas as pd
 from lib.logConf import *
-import sys
+
 
 initialize_logger(console=False)
 
@@ -38,7 +38,7 @@ def extract_clean(df):
 
     except Exception as e:
         logging.exception(' Failed extract_clean')
-        quit()
+        pass
         
 
 
