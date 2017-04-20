@@ -77,7 +77,7 @@ def city_date(filename):
     Takes PDF name of known structure & returns the city & auction date
     """
     name_parts=filename.split('/')[-1].split('_')
-    return name_parts[1], name_parts[0]
+    return name_parts[1].lower(), name_parts[0]
 
 
 # Process Pages 2 - N
