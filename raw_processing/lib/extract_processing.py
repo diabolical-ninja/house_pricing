@@ -62,8 +62,8 @@ def agent_breaks(df):
             new_agent = "{} {}".format(df.agent[(i-1)], df.agent[i])
             df.set_value((i-1),'agent',new_agent)
 
-    # Remove rows identified & exit
-    return df.drop(brk_rows.index)
+    # Remove rows identified, reset index & exit
+    return df.drop(brk_rows.index).reset_index().drop('index',1)
 
 
 
