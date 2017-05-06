@@ -33,11 +33,9 @@ host = conf['db']['server']
 port = conf['db']['port']
 engine = create_engine('postgresql://{}:{}@{}:{}/{}'.format(user, pwrd, host, port, dbName))
 
-# Dummy file for testing
-#pdfFile = 'C:/Users/Yass/Google Drive/Data Science/Real Estate Analysis/20150530_melbourne_auction_results.pdf'
-all_files = 'C:/Users/Yass/Google Drive/Data Science/Real Estate Analysis/'
 
 
+# Main Function which steps through each module & uploads result to DB
 def main(pdfFile):
     
     logging.info(' Begin Processing {}'.format(pdfFile))
@@ -64,7 +62,13 @@ def main(pdfFile):
 
     except Exception as e:
         logging.exception(' Failed processing {}'.format(pdfFile))
-        
+        pass
+
+
+
+# Dummy file for testing
+#pdfFile = 'C:/Users/Yass/Google Drive/Data Science/Real Estate Analysis/20160723_melbourne_auction_results.pdf'
+all_files = 'C:/Users/Yass/Google Drive/Data Science/Real Estate Analysis/'
 
 
 if __name__ == "__main__":
