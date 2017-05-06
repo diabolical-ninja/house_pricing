@@ -56,9 +56,11 @@ def agent_breaks(df):
 
     # For each instance concatenate agent to previous agent
     # Work in reverse order to handle cases with multiple breaks
+    # Don't try to fix first row issues. They'll just be removed.
     for i in reversed(brk_rows.index):
-        new_agent = "{} {}".format(df.agent[(i-1)], df.agent[i])
-        df.set_value((i-1),'agent',new_agent)
+        if i != 0:
+            new_agent = "{} {}".format(df.agent[(i-1)], df.agent[i])
+            df.set_value((i-1),'agent',new_agent)
 
     # Remove rows identified & exit
     return df.drop(brk_rows.index)
