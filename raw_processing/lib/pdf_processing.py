@@ -93,7 +93,10 @@ def process_p2n(pdf, coordinates):
     if num_pages != 1:
         # Extract from pages 2-(N-1)
         hold=read_pdf_table(pdf, pages=range(2, num_pages+1), area=coordinates)
-        return hold[hold.ix[:, 0] != 'Suburb']
+        try:
+            return hold[hold.ix[:, 0] != 'Suburb']
+        except:
+            return None
 
 
 
