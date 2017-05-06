@@ -105,8 +105,13 @@ def process_p1(pdf, coordinates, columns=None):
     """
     Takes PDF from domain & extracts auctions results from the first page
     """
-
-    p1=read_pdf_table(pdf, pages=1, area=coordinates)
+    
+    # Try reading in the file with tight coordinates
+    # If that fails then let it guess and fix it later
+    try:
+        p1=read_pdf_table(pdf, pages=1, area=coordinates)
+    except:
+        p1=read_pdf_table(pdf, pages=1)
     
     if p1 is None:
         ncol=0
@@ -129,9 +134,10 @@ def process_p1(pdf, coordinates, columns=None):
     # Check that y1 is not too low
     # If it is then move up in small steps
     while ncol == 6:
-        coordinates[0]=coordinates[0] - 0.1
-        p1=read_pdf_table(pdf, pages=1, area=coordinates)
+        
         try:
+            coordinates[0]=coordinates[0] - 0.1
+            p1=read_pdf_table(pdf, pages=1, area=coordinates)
             ncol=p1.shape[1]
         except:
             ncol=0
