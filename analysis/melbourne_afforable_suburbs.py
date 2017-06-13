@@ -1,5 +1,5 @@
 """
-Title:  melbourne_growth_suburbs
+Title:  melbourne_afforable_suburbs.py
 Desc:   Identify Suburbs in Melbourne with prices between $350-450k
             - Property Type = House
             - CBD Distance pref = <20km
