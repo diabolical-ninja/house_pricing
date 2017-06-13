@@ -11,15 +11,19 @@ Date: 2017-02-07
 """
 
 import pandas as pd
+import googlemaps
+import yaml
 from lib.logConf import *
 
 initialize_logger(console=False)
 
+conf = yaml.load(open('../conf.yaml','r'))
+google_key = conf['google']['key']
 
-def google_data(df):
+
+def google_data(df, key):
 
     # Initialise Connection Object
-    google_key = 'AIzaSyCz99k0qrmN3qc7kL2gI_hViJWOtnm5wnE'  # This HAS to be removed!!
     gmaps = googlemaps.Client(key=google_key)
 
     # Apply function on Address & Suburb
@@ -48,7 +52,7 @@ def nearest_feature(address, feature, num_sm, sm_pref, con):
     address_coords = con.geocode(address)[0]['geometry']['location']
     
     # Find all places within radius of POI
-    places_out = gmaps.places(query = feature
+    places_out = con.places(query = feature
                                 , radius = 2000   # Search within 2km. Might change later
                                 , location = address_coords)
     
@@ -64,7 +68,7 @@ def nearest_feature(address, feature, num_sm, sm_pref, con):
     for mode in transport_methods:
         
         # Get distance to all locations      
-        dmat = gmaps.distance_matrix(origins = address_coords
+        dmat = con.distance_matrix(origins = address_coords
                         , destinations = nearby_coords
                         , mode = mode
                         , units = 'metric')
