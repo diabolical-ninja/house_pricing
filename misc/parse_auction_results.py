@@ -10,7 +10,7 @@
 import os
 import pandas as pd
 from PyPDF2 import PdfFileReader
-from tabula import read_pdf_table
+from tabula import read_pdf
 
 
 
@@ -100,7 +100,7 @@ def process_p2n(pdf, coordinates):
     
     if num_pages != 1:    
         # Extract from pages 2-(N-1)
-        hold = read_pdf_table(pdf, pages = range(2,num_pages+1), area = coordinates)
+        hold = read_pdf(pdf, pages = range(2,num_pages+1), area = coordinates)
         return  hold[hold.ix[:,0]!='Suburb']
 
     
@@ -108,7 +108,7 @@ def process_p2n(pdf, coordinates):
 # Process Page 1, checking that no more than the 1st row is missed
 def process_p1(pdf, coordinates, columns=None):
 
-    p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
+    p1 = read_pdf(pdf, pages = 1, area = coordinates)
     
     if p1 is None:
         ncol = 0
@@ -121,7 +121,7 @@ def process_p1(pdf, coordinates, columns=None):
     while ncol != 6:
 
         coordinates[0] = coordinates[0] + 1
-        p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
+        p1 = read_pdf(pdf, pages = 1, area = coordinates)
         try:
             ncol = p1.shape[1]
         except:
@@ -133,7 +133,7 @@ def process_p1(pdf, coordinates, columns=None):
     while ncol == 6:
         
         coordinates[0] = coordinates[0] - 0.1
-        p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
+        p1 = read_pdf(pdf, pages = 1, area = coordinates)
         try:
             ncol = p1.shape[1]
         except:
@@ -142,7 +142,7 @@ def process_p1(pdf, coordinates, columns=None):
         # Indicates we've gone past the top of the table
         if ncol != 6:
             coordinates[0] = coordinates[0] + 0.1
-            p1 = read_pdf_table(pdf, pages = 1, area = coordinates)
+            p1 = read_pdf(pdf, pages = 1, area = coordinates)
         
         
     # TO-DO: read first row of table. Currently skipping

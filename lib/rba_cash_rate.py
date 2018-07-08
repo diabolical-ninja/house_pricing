@@ -7,7 +7,7 @@ Date:   2017-04-01
 
 # Required Libraries
 from bs4 import BeautifulSoup
-import urllib2
+from urllib.request import urlopen
 import pandas as pd
 from tqdm import tqdm
 import datetime
@@ -36,8 +36,8 @@ def getCashHistory():
     url = 'http://www.rba.gov.au/statistics/cash-rate/'
     
     # Read site contents & convert to tree
-    content = urllib2.urlopen(url).read()
-    soup = BeautifulSoup(content, "lxml")
+    content = urlopen(url).read()
+    soup = BeautifulSoup(content, "lxml");
        
     
     # Find all instances of the 'tr' tag & iterate through
@@ -47,7 +47,8 @@ def getCashHistory():
     #   - New Cash Rate
     sections = soup.find_all('tr')
     cash_rate = []
-    for sec in tqdm(sections):
+    # for sec in tqdm(sections):
+    for sec in sections:
         if sec.find('tr'):
             continue
         else:

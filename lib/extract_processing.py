@@ -9,17 +9,12 @@ Date: 2016-11-25
 """
 
 import pandas as pd
-from lib.logConf import *
 
-
-initialize_logger(console=False)
 
 
 # Will perform all the cleaning tasks
 def extract_clean(df):
     
-    logging.info(' Start extract_clean')
-
     try:
 
         # Price: Remove special characters & convert to float
@@ -32,12 +27,10 @@ def extract_clean(df):
         # Clean up agent names which contained linebreaks
         df = agent_breaks(df)
 
-        logging.info(' Finish extract_clean')
-
         return df
 
     except Exception as e:
-        logging.exception(' Failed extract_clean')
+        print(e)
         pass
         
 

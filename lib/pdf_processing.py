@@ -7,11 +7,8 @@ Date: 2016-11-25
 
 import pandas as pd
 from PyPDF2 import PdfFileReader
-from tabula import read_pdf_table
-from lib.logConf import *
+from tabula import read_pdf
 
-
-initialize_logger(console=False)
 
 # Coordinates for first page table
 y1 = 224.4
@@ -33,8 +30,6 @@ p2n_coords = [y21, x21, y22, x22]
 # All of the steps required to extract the data table from the PDF
 # Takes the location of a pdf as in input & returns a dataframe with the extracted information
 def pdf_process(pdf):
-    
-    logging.info(' Start pdf_process on {}'.format(pdf))
     
     try:
         # Determine City & Auction Date
@@ -61,12 +56,11 @@ def pdf_process(pdf):
         out = out.drop('index',1)
         out.columns=['suburb','address','building_type','price','result','agent','city','date']
         
-        logging.info(' Finish pdf_process on {}'.format(pdf))
 
         return out
 
     except Exception as e:
-        logging.exception(' Failed pdf_process on {}'.format(pdf))
+
         pass
 
 
@@ -92,7 +86,7 @@ def process_p2n(pdf, coordinates):
         num_pages=reader.getNumPages()
     if num_pages != 1:
         # Extract from pages 2-(N-1)
-        hold=read_pdf_table(pdf, pages=range(2, num_pages+1), area=coordinates)
+        hold=read_pdf(pdf, pages=list(range(2, num_pages+1)), area=coordinates)
         try:
             return hold[hold.ix[:, 0] != 'Suburb']
         except:
@@ -109,9 +103,9 @@ def process_p1(pdf, coordinates, columns=None):
     # Try reading in the file with tight coordinates
     # If that fails then let it guess and fix it later
     try:
-        p1=read_pdf_table(pdf, pages=1, area=coordinates)
+        p1=read_pdf(pdf, pages=1, area=coordinates)
     except:
-        p1=read_pdf_table(pdf, pages=1)
+        p1=read_pdf(pdf, pages=1)
     
     if p1 is None:
         ncol=0
@@ -124,7 +118,7 @@ def process_p1(pdf, coordinates, columns=None):
     while ncol != 6:
 
         coordinates[0]=coordinates[0] + 1
-        p1=read_pdf_table(pdf, pages=1, area=coordinates)
+        p1=read_pdf(pdf, pages=1, area=coordinates)
         try:
             ncol=p1.shape[1]
         except:
@@ -137,7 +131,7 @@ def process_p1(pdf, coordinates, columns=None):
         
         try:
             coordinates[0]=coordinates[0] - 0.1
-            p1=read_pdf_table(pdf, pages=1, area=coordinates)
+            p1=read_pdf(pdf, pages=1, area=coordinates)
             ncol=p1.shape[1]
         except:
             ncol=0
@@ -145,7 +139,7 @@ def process_p1(pdf, coordinates, columns=None):
         # Indicates we've gone past the top of the table
         if ncol != 6:
             coordinates[0]=coordinates[0] + 0.1
-            p1=read_pdf_table(pdf, pages=1, area=coordinates)
+            p1=read_pdf(pdf, pages=1, area=coordinates)
 
 
     # TO-DO: read first row of table. Currently skipping
