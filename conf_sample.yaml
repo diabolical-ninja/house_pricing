@@ -1,0 +1,9 @@
+db:
+  server: ''
+  port: ''
+  username: ''
+  password: ''
+  dbname: ''
+google:
+  key: ''
+directory: ''
