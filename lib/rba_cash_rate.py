@@ -9,7 +9,6 @@ Date:   2017-04-01
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import pandas as pd
-from tqdm import tqdm
 import datetime
 
 
