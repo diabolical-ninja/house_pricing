@@ -3,15 +3,11 @@
 ## ALL
 - Project config file containing:
     - PDF coordinates
-    - Logging file name & directory
-
-
-## Log conf
-- Error log being overwritten, want to append
-    - Changing "w" to "a" writes triplicates
-
+- Add logging
 
 
 ## PDF Processing
+- Processing page 1 has the potential to enter an infinite loop when too few properties are listed
+
 
 ## Extract Processing
