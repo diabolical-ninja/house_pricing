@@ -24,11 +24,16 @@ def parse_pdfs(pdf: str):
     # 1. Extract Table from PDF
     out = pdf_process(pdf)
 
-    # 2. Clean up Columns
-    clean = extract_clean(out)
+    if out is not None:
+    
+        # 2. Clean up Columns
+        clean = extract_clean(out)
 
-    # 3. Get Current Cash Rate
-    cash_rates = getCashHistory()
-    clean['cash_rate'] = cashRateAtDate(cash_rates,clean.date[0])['cash_rate']
+        # 3. Get Current Cash Rate
+        cash_rates = getCashHistory()
+        clean['cash_rate'] = cashRateAtDate(cash_rates,clean.date[0])['cash_rate']
 
-    return clean
+        return clean
+
+    else:
+        return None

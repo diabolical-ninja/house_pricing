@@ -47,17 +47,21 @@ def pdf_process(pdf):
         # Process page 1
         p1 = process_p1(pdf, p1_coords, p2_columns)
         
-        # Combine P1 & P2N and add city & date info
-        out = p1.append(p2n).reset_index()
-        out['city'] = city
-        out['date'] = date
-
-        # Update column names
-        out = out.drop('index',1)
-        out.columns=['suburb','address','building_type','price','result','agent','city','date']
+        if p1 is not None:
         
+            # Combine P1 & P2N and add city & date info
+            out = p1.append(p2n).reset_index()
+            out['city'] = city
+            out['date'] = date
 
-        return out
+            # Update column names
+            out = out.drop('index',1)
+            out.columns=['suburb','address','building_type','price','result','agent','city','date']
+        
+            return out
+        
+        else:
+            return None
 
     except Exception as e:
 
@@ -113,9 +117,13 @@ def process_p1(pdf, coordinates, columns=None):
         ncol=p1.shape[1]
 
 
+    # Limit the number of attempts used to identify top/bottom of table
+    # Repeat for a maximum of 10 attempts
+    attempts = 0
+
     # Check that y1 is not too high
     # If it is then move down 1 point
-    while ncol != 6:
+    while ncol != 6 and attempts < 10:
 
         coordinates[0]=coordinates[0] + 1
         p1=read_pdf(pdf, pages=1, area=coordinates)
@@ -123,11 +131,13 @@ def process_p1(pdf, coordinates, columns=None):
             ncol=p1.shape[1]
         except:
             ncol=0
+            attempts += 1
 
 
     # Check that y1 is not too low
     # If it is then move up in small steps
-    while ncol == 6:
+    attempts = 0
+    while ncol == 6 and attempts < 10:
         
         try:
             coordinates[0]=coordinates[0] - 0.1
@@ -135,6 +145,7 @@ def process_p1(pdf, coordinates, columns=None):
             ncol=p1.shape[1]
         except:
             ncol=0
+            attempts += 1
 
         # Indicates we've gone past the top of the table
         if ncol != 6:
@@ -142,16 +153,20 @@ def process_p1(pdf, coordinates, columns=None):
             p1=read_pdf(pdf, pages=1, area=coordinates)
 
 
-    # TO-DO: read first row of table. Currently skipping
-    # The 2nd row is incorrectly read as the header. Make it a row
-    tmp=pd.DataFrame([p1.columns.tolist()], columns=p1.columns.tolist())
-    p1=p1.append(tmp)
+    if p1 is not None:
 
-    # If Column headers aren't provided assume their values
-    if columns is None:
-        p1.columns=['suburb','address','building_type','price','result','agent']
+        # TO-DO: read first row of table. Currently skipping
+        # The 2nd row is incorrectly read as the header. Make it a row
+        tmp=pd.DataFrame([p1.columns.tolist()], columns=p1.columns.tolist())
+        p1=p1.append(tmp)
+
+        # If Column headers aren't provided assume their values
+        if columns is None:
+            p1.columns=['suburb','address','building_type','price','result','agent']
+        else:
+            p1.columns=columns
+
+        return p1
+
     else:
-        p1.columns=columns
-
-    return p1
-
+        return None

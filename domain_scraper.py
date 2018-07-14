@@ -34,11 +34,11 @@ domain_url = "https://auction-results.domain.com.au/Proofed/PDF"
 unprocessed_dir = "{}/unprocessed".format(conf['directory'])
 
 
-# Run for all cities
-for city in city_list:
+# # Run for all cities
+# for city in city_list:
 
-    result_download(url=domain_url, city=city, out_dir=unprocessed_dir)
-    print("{}: Downloaded {} Auction Results".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), city))
+#     result_download(url=domain_url, city=city, out_dir=unprocessed_dir)
+#     print("{}: Downloaded {} Auction Results".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), city))
 
 
 
@@ -53,22 +53,29 @@ for pdf_file in os.listdir(unprocessed_dir):
         unprocessed_pdf = "{}/{}".format(unprocessed_dir,pdf_file)
         parsed_df = parse_pdfs(unprocessed_pdf)
 
-        # Dump to disk
-        parsed_df.to_csv("{}/testing.csv".format(conf['directory']),
-               sep = "|",
-               index = False,
-               quoting = csv.QUOTE_ALL,
-               encoding='utf-8',
-               mode = 'a'
-               )
+        if parsed_df is not None:
 
-        # Upload to DB
-        parsed_df.to_sql('auction_results', con = engine, if_exists = 'append', schema ='real_estate', index = False)
+            # Dump to disk
+            parsed_df.to_csv("{}/testing.csv".format(conf['directory']),
+                sep = "|",
+                index = False,
+                quoting = csv.QUOTE_ALL,
+                encoding='utf-8',
+                mode = 'a'
+                )
 
+            # Upload to DB
+            parsed_df.to_sql('auction_results', con = engine, if_exists = 'append', schema ='real_estate', index = False)
 
-        # Move the PDF to processed
-        os.rename(unprocessed_pdf, "{}/processed/{}".format(conf['directory'], pdf_file))
+            # Move the PDF to processed
+            os.rename(unprocessed_pdf, "{}/processed/{}".format(conf['directory'], pdf_file))
 
-        print("{}: Parsed {}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), pdf_file))
+            print("{}: Parsed {}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), pdf_file))
+
+        else:
+
+            # Move the PDF to unprocessable directory
+            os.rename(unprocessed_pdf, "{}/not_processed/{}".format(conf['directory'], pdf_file))
+            print("{}: Could Not Parse {}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), pdf_file))
 
 
