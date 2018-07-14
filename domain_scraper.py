@@ -56,13 +56,14 @@ for pdf_file in os.listdir(unprocessed_dir):
         if parsed_df is not None:
 
             # Dump to disk
-            parsed_df.to_csv("{}/testing.csv".format(conf['directory']),
-                sep = "|",
-                index = False,
-                quoting = csv.QUOTE_ALL,
-                encoding='utf-8',
-                mode = 'a'
-                )
+            # Uncomment if desired
+            # parsed_df.to_csv("{}/testing.csv".format(conf['directory']),
+            #     sep = "|",
+            #     index = False,
+            #     quoting = csv.QUOTE_ALL,
+            #     encoding='utf-8',
+            #     mode = 'a'
+            #     )
 
             # Upload to DB
             parsed_df.to_sql('auction_results', con = engine, if_exists = 'append', schema ='real_estate', index = False)
