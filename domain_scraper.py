@@ -47,7 +47,7 @@ unprocessed_dir = "{}/unprocessed".format(conf['directory'])
 for pdf_file in os.listdir(unprocessed_dir):
     
     # Ignore hidden files
-    if not pdf_file.startswith('.'): 
+    if pdf_file.endswith('.pdf'):
         
         # Extract data
         unprocessed_pdf = "{}/{}".format(unprocessed_dir,pdf_file)
