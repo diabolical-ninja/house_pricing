@@ -34,11 +34,11 @@ domain_url = "https://auction-results.domain.com.au/Proofed/PDF"
 unprocessed_dir = "{}/unprocessed".format(conf['directory'])
 
 
-# # Run for all cities
-# for city in city_list:
+# Run for all cities
+for city in city_list:
 
-#     result_download(url=domain_url, city=city, out_dir=unprocessed_dir)
-#     print("{}: Downloaded {} Auction Results".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), city))
+    result_download(url=domain_url, city=city, out_dir=unprocessed_dir)
+    print("{}: Downloaded {} Auction Results".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), city))
 
 
 
