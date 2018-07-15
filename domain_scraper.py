@@ -8,10 +8,21 @@ Date:   2018-07-08
 import yaml
 import csv
 import os
+import logging
 from datetime import datetime
 from sqlalchemy import create_engine
 from lib.auction_results_download import result_download
 from lib.parse_pdfs import parse_pdfs
+
+# Configure logging
+LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+logging.basicConfig(filename = "domain_scraper_status.log",
+                    level = logging.DEBUG, 
+                    format = LOG_FORMAT)
+logger = logging.getLogger()
+
+
+
 
 conf = yaml.load(open('conf.yaml','r'))
 
@@ -39,6 +50,10 @@ for city in city_list:
 
     result_download(url=domain_url, city=city, out_dir=unprocessed_dir)
     print("{}: Downloaded {} Auction Results".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), city))
+
+    # Log execution
+    log_msg = "Downloaded {} Auction Results".format(city)
+    logger.info(log_msg)
 
 
 
@@ -73,10 +88,18 @@ for pdf_file in os.listdir(unprocessed_dir):
 
             print("{}: Parsed {}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), pdf_file))
 
+            # Log execution
+            log_msg = "Parsed {}".format(pdf_file)
+            logger.info(log_msg)
+
         else:
 
             # Move the PDF to unprocessable directory
             os.rename(unprocessed_pdf, "{}/not_processed/{}".format(conf['directory'], pdf_file))
             print("{}: Could Not Parse {}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), pdf_file))
+
+            # Log execution
+            log_msg = "Could Not Parse {}".format(pdf_file)
+            logger.info(log_msg)
 
 
