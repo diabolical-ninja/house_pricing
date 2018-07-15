@@ -4,10 +4,11 @@
 - Project config file containing:
     - PDF coordinates
 - Add logging
+    - Basic logging is currently present
 
 
 ## PDF Processing
-- Processing page 1 has the potential to enter an infinite loop when too few properties are listed
+
 
 
 ## Extract Processing
