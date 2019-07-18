@@ -32,7 +32,7 @@ def result_download(url: str, city: str, out_dir: str):
     full_url = "{}/{}_Domain.pdf".format(url, city)
     
     # Source Auction Results & Save to appropriate directory
-    file = requests.get(full_url, stream=True)
+    file = requests.get(full_url, stream=True, verify=False)
 
     # Save PDF to disk
     os.makedirs(os.path.dirname(output_name), exist_ok=True)
