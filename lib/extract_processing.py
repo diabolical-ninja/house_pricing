@@ -53,7 +53,7 @@ def agent_breaks(df):
     for i in reversed(brk_rows.index):
         if i != 0:
             new_agent = "{} {}".format(df.agent[(i-1)], df.agent[i])
-            df.set_value((i-1),'agent',new_agent)
+            df.at[(i-1), 'agent'] = new_agent
 
     # Remove rows identified, reset index & exit
     return df.drop(brk_rows.index).reset_index().drop('index',1)
@@ -68,7 +68,7 @@ def getBuildType(df):
         Bedroom count (NA, 0.....N)
         Building Type (studio, house, etc)
     '''
-    tmp = df['building_type'].str.split(' ',expand=True).ix[:,[0,2]]
+    tmp = df['building_type'].str.split(' ',expand=True).iloc[:,[0,2]]
     tmp.columns = ['num_beds','prop_type']
     
     # Some buildings are listed as:

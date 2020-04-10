@@ -9,7 +9,6 @@ import pandas as pd
 from PyPDF2 import PdfFileReader
 from tabula import read_pdf
 
-
 # Coordinates for first page table
 y1 = 224.4
 x1 = 11
@@ -24,7 +23,6 @@ x21 = 11
 y22 = 780
 x22 = 590
 p2n_coords = [y21, x21, y22, x22]
-
 
 
 # All of the steps required to extract the data table from the PDF
@@ -64,6 +62,7 @@ def pdf_process(pdf):
             return None
 
     except Exception as e:
+        print(e)
 
         pass
 
@@ -91,8 +90,9 @@ def process_p2n(pdf, coordinates):
     if num_pages != 1:
         # Extract from pages 2-(N-1)
         hold=read_pdf(pdf, pages=list(range(2, num_pages+1)), area=coordinates)
+        
         try:
-            return hold[hold.ix[:, 0] != 'Suburb']
+            return hold[hold.iloc[:, 0] != 'Suburb']
         except:
             return None
 
@@ -110,6 +110,9 @@ def process_p1(pdf, coordinates, columns=None):
         p1=read_pdf(pdf, pages=1, area=coordinates)
     except:
         p1=read_pdf(pdf, pages=1)
+
+    if p1 is not None:
+        p1 = p1[0]
     
     if p1 is None:
         ncol=0
@@ -127,6 +130,7 @@ def process_p1(pdf, coordinates, columns=None):
 
         coordinates[0]=coordinates[0] + 1
         p1=read_pdf(pdf, pages=1, area=coordinates)
+        p1 = p1[0]
         try:
             ncol=p1.shape[1]
         except:
@@ -142,6 +146,7 @@ def process_p1(pdf, coordinates, columns=None):
         try:
             coordinates[0]=coordinates[0] - 0.1
             p1=read_pdf(pdf, pages=1, area=coordinates)
+            p1 = p1[0]
             ncol=p1.shape[1]
         except:
             ncol=0
@@ -151,6 +156,7 @@ def process_p1(pdf, coordinates, columns=None):
         if ncol != 6:
             coordinates[0]=coordinates[0] + 0.1
             p1=read_pdf(pdf, pages=1, area=coordinates)
+            p1 = p1[0]
 
 
     if p1 is not None:
@@ -170,3 +176,6 @@ def process_p1(pdf, coordinates, columns=None):
 
     else:
         return None
+
+
+# %%

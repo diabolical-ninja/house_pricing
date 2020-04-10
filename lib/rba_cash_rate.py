@@ -32,7 +32,7 @@ def getCashHistory():
     """
     
     # Location of Cash Rates
-    url = 'http://www.rba.gov.au/statistics/cash-rate/'
+    url = 'https://www.rba.gov.au/statistics/cash-rate/'
     
     # Read site contents & convert to tree
     content = urlopen(url).read()
@@ -91,6 +91,6 @@ def cashRateAtDate(history, date):
     # Want to find the most recent record (max) that hasn't surpassed the 
     # auction date. This is the max((historical dates - date) < 0).
     diff = history['date'] - date
-    return history.ix[diff[diff < datetime.timedelta(minutes=0)].idxmax()]
+    return history.iloc[diff[diff < datetime.timedelta(minutes=0)].idxmax()]
     
     
