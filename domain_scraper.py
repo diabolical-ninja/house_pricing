@@ -24,7 +24,7 @@ logger = logging.getLogger()
 
 
 
-conf = yaml.load(open('conf.yaml','r'))
+conf = yaml.safe_load(open('conf.yaml','r'))
 
 
 # Connect to DB
