@@ -9,6 +9,10 @@ Date:   2018-07-08
 from lib.pdf_processing import pdf_process
 from lib.extract_processing import extract_clean
 from lib.rba_cash_rate import *
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def parse_pdfs(pdf: str):
@@ -19,7 +23,9 @@ def parse_pdfs(pdf: str):
     
     Returns:
         pandas.core.frame.DataFrame: Dataframe of the extracted & cleaned data
-    """
+   """
+
+    logger.info(f"Parsing: {pdf}")
 
     # 1. Extract Table from PDF
     out = pdf_process(pdf)
@@ -36,4 +42,5 @@ def parse_pdfs(pdf: str):
         return clean
 
     else:
+        logging.warn(f"Unable to parse: {pdf}")
         return None

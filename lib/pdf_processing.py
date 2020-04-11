@@ -9,63 +9,37 @@ import pandas as pd
 from PyPDF2 import PdfFileReader
 from tabula import read_pdf
 
-# Coordinates for first page table
-y1 = 224.4
-x1 = 11
-y2 = 770
-x2 = 580
-p1_coords = [y1, x1, y2, x2] 
-
-
-# Coordinates for pages 2-n
-y21 = 0
-x21 = 11
-y22 = 780
-x22 = 590
-p2n_coords = [y21, x21, y22, x22]
-
 
 # All of the steps required to extract the data table from the PDF
 # Takes the location of a pdf as in input & returns a dataframe with the extracted information
 def pdf_process(pdf):
-    
+
     try:
         # Determine City & Auction Date
         city, date = city_date(pdf)
 
-        # Process pages 2-N
-        p2n = process_p2n(pdf, p2n_coords)
-                
-        # Extract Columns to assign to Page 1
-        if p2n is None:
-            p2_columns = None
-        else:
-            p2_columns = p2n.columns
-        
-        # Process page 1
-        p1 = process_p1(pdf, p1_coords, p2_columns)
-        
-        if p1 is not None:
-        
-            # Combine P1 & P2N and add city & date info
-            out = p1.append(p2n).reset_index()
-            out['city'] = city
-            out['date'] = date
+        # Extract results
+        results_df = extract_results(pdf)
 
-            # Update column names
-            out = out.drop('index',1)
-            out.columns=['suburb','address','building_type','price','result','agent','city','date']
-        
-            return out
-        
-        else:
-            return None
+        # Add City & Date info in
+        results_df['city'] = city
+        results_df['date'] = date
 
+        return results_df
+        
     except Exception as e:
         print(e)
 
-        pass
+        return None
 
+
+def extract_results(pdf):
+    
+    results = read_pdf(pdf, pages = 'all', pandas_options={'header': None})
+    df = pd.concat(results, ignore_index=True)
+    df.columns = ['suburb','address','building_type','price','result','agent']
+
+    return df
 
 
 # Determine city & auction date
@@ -76,106 +50,3 @@ def city_date(filename):
     name_parts=filename.split('/')[-1].split('_')
     return name_parts[1].lower(), name_parts[0]
 
-
-# Process Pages 2 - N
-def process_p2n(pdf, coordinates):
-    """
-    Takes PDF from Domain & extracts auction results from pages 2 onwards
-    """
-
-    # Determine number of pages
-    with open(pdf, 'rb') as f:
-        reader=PdfFileReader(f, 'rb')
-        num_pages=reader.getNumPages()
-    if num_pages != 1:
-        # Extract from pages 2-(N-1)
-        hold=read_pdf(pdf, pages=list(range(2, num_pages+1)), area=coordinates)
-        
-        try:
-            return hold[hold.iloc[:, 0] != 'Suburb']
-        except:
-            return None
-
-
-
-# Process Page 1, checking that no more than the 1st row is missed
-def process_p1(pdf, coordinates, columns=None):
-    """
-    Takes PDF from domain & extracts auctions results from the first page
-    """
-    
-    # Try reading in the file with tight coordinates
-    # If that fails then let it guess and fix it later
-    try:
-        p1=read_pdf(pdf, pages=1, area=coordinates)
-    except:
-        p1=read_pdf(pdf, pages=1)
-
-    if p1 is not None:
-        p1 = p1[0]
-    
-    if p1 is None:
-        ncol=0
-    else:
-        ncol=p1.shape[1]
-
-
-    # Limit the number of attempts used to identify top/bottom of table
-    # Repeat for a maximum of 10 attempts
-    attempts = 0
-
-    # Check that y1 is not too high
-    # If it is then move down 1 point
-    while ncol != 6 and attempts < 10:
-
-        coordinates[0]=coordinates[0] + 1
-        p1=read_pdf(pdf, pages=1, area=coordinates)
-        p1 = p1[0]
-        try:
-            ncol=p1.shape[1]
-        except:
-            ncol=0
-            attempts += 1
-
-
-    # Check that y1 is not too low
-    # If it is then move up in small steps
-    attempts = 0
-    while ncol == 6 and attempts < 10:
-        
-        try:
-            coordinates[0]=coordinates[0] - 0.1
-            p1=read_pdf(pdf, pages=1, area=coordinates)
-            p1 = p1[0]
-            ncol=p1.shape[1]
-        except:
-            ncol=0
-            attempts += 1
-
-        # Indicates we've gone past the top of the table
-        if ncol != 6:
-            coordinates[0]=coordinates[0] + 0.1
-            p1=read_pdf(pdf, pages=1, area=coordinates)
-            p1 = p1[0]
-
-
-    if p1 is not None:
-
-        # TO-DO: read first row of table. Currently skipping
-        # The 2nd row is incorrectly read as the header. Make it a row
-        tmp=pd.DataFrame([p1.columns.tolist()], columns=p1.columns.tolist())
-        p1=p1.append(tmp)
-
-        # If Column headers aren't provided assume their values
-        if columns is None:
-            p1.columns=['suburb','address','building_type','price','result','agent']
-        else:
-            p1.columns=columns
-
-        return p1
-
-    else:
-        return None
-
-
-# %%
