@@ -10,11 +10,18 @@ import time
 import yaml
 import os
 
+# The Domain URL has an old certificate & throws a bunch of warnings as a result
+# Yes this is bad but let it be anyway
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
 
 # # Example Inputs
 # url = "https://auction-results.domain.com.au/Proofed/PDF"
 # city = 'Adelaide'
 # out_dir = ''
+
 
 
 def result_download(url: str, city: str, out_dir: str):
@@ -32,7 +39,7 @@ def result_download(url: str, city: str, out_dir: str):
     full_url = "{}/{}_Domain.pdf".format(url, city)
     
     # Source Auction Results & Save to appropriate directory
-    file = requests.get(full_url, stream=True, verify=False)
+    file = requests.get(full_url, verify=False)
 
     # Save PDF to disk
     os.makedirs(os.path.dirname(output_name), exist_ok=True)
