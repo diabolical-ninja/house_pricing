@@ -4,6 +4,13 @@ db:
   username: ''
   password: ''
   dbname: ''
+domain:
+  client: ''
+  secret: ''
+  scopes:
+    - 'api_listings_read'
+    - 'api_agencies_read'
+    - 'api_salesresults_read'
 google:
   key: ''
 directory: ''

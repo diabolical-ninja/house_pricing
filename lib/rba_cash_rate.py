@@ -12,7 +12,6 @@ import pandas as pd
 import datetime
 
 
-
 def getCashHistory():
     """
     From inspecting the site, I can see that the data is stored like:
@@ -75,9 +74,6 @@ def getCashHistory():
     
     return pd.DataFrame(cash_rate)
             
-            
-            
-
 
 def cashRateAtDate(history, date):
     '''
@@ -86,7 +82,7 @@ def cashRateAtDate(history, date):
     '''
     
     # convert date format
-    date = datetime.datetime.strptime(date, '%Y%m%d')
+    date = datetime.datetime.strptime(date, '%Y-%m-%d')
     
     # Want to find the most recent record (max) that hasn't surpassed the 
     # auction date. This is the max((historical dates - date) < 0).

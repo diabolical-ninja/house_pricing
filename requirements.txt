@@ -1,6 +1,4 @@
 pyyaml
-pypdf2
-tabula-py
 psycopg2-binary
 sqlalchemy
 requests
