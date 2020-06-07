@@ -21,6 +21,39 @@ CREATE TABLE real_estate.auction_results (
 
 
 
+/*
+Migrate to Domain API Spec
+  - Rename Matching Columns
+  - Add missing columns
+*/
+
+-- Rename
+ALTER TABLE real_estate.auction_results
+RENAME COLUMN prop_type TO property_type;
+
+ALTER TABLE real_estate.auction_results
+RENAME COLUMN num_beds TO bedrooms;
+
+
+-- Add missing
+ALTER TABLE real_estate.auction_results
+ADD COLUMN agency_id VARCHAR,
+ADD COLUMN agency_name VARCHAR,
+ADD COLUMN agency_profile_page_url VARCHAR,
+ADD COLUMN bathrooms FLOAT,
+ADD COLUMN carspaces INT,
+ADD COLUMN geo_location_latitude FLOAT,
+ADD COLUMN geo_location_longitude FLOAT,
+ADD COLUMN id INT,
+ADD COLUMN postcode VARCHAR,
+ADD COLUMN property_details_url VARCHAR,
+ADD COLUMN state VARCHAR,
+ADD COLUMN street_name VARCHAR,
+ADD COLUMN street_number VARCHAR,
+ADD COLUMN street_type VARCHAR,
+ADD COLUMN unit_number VARCHAR
+;
+
 
 /*
 Create definitions for the various keys/symbols present

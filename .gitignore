@@ -3,3 +3,6 @@ conf.yaml
 *.pyc
 *.bat
 *.log
+
+.vscode/
+.vscode/settings.json
